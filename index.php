@@ -31,13 +31,20 @@ class local_dbdemo_form extends moodleform {
         global $DB,$USER;
         $mform = $this->_form;
 
-        $mform->addElement('text','demotext');
+        $mform->addElement('textarea','sql','SQL Query','wrap="virtual" rows="10" cols="50"');
         $mform->setType('demotext',PARAM_RAW);
-
+        $this->add_action_buttons();
+    }
+}
 $mform = new local_dbdemo_form();
 echo $OUTPUT->header();
 $mform->display();
 echo $OUTPUT->footer();
 if($data =$mform->get_data()){
+    global $DB;
+    $records = $DB->{"get_records"}('user');
 
+    $result= $DB->$func;
+    var_dump($data->sql);
+    exit();
 }
