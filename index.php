@@ -20,19 +20,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 global $CFG, $PAGE;
-require_once(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/formslib.php');
+require_once __DIR__ . '/../../config.php';
+require_once $CFG->libdir . '/formslib.php';
 
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/dbdemo.php');
 $filename = '';
 class local_dbdemo_form extends moodleform {
     protected function definition() {
-        global $DB,$USER;
+        global $DB, $USER;
         $mform = $this->_form;
 
-        $mform->addElement('textarea','sql','SQL Query','wrap="virtual" rows="10" cols="50"');
-        $mform->setType('demotext',PARAM_RAW);
+        $mform->addElement('textarea', 'dbquery', 'SQL Query', 'wrap="virtual" rows="10" cols="50"');
+        $mform->setDefault('dbquery', '$DB->get_records("user",["username"=> "admin"])');
+        $mform->setType('demotext', PARAM_RAW);
         $this->add_action_buttons();
     }
 }
@@ -40,11 +41,16 @@ $mform = new local_dbdemo_form();
 echo $OUTPUT->header();
 $mform->display();
 echo $OUTPUT->footer();
-if($data =$mform->get_data()){
+if ($data = $mform->get_data()) {
     global $DB;
-    $records = $DB->{"get_records"}('user');
-
-    $result= $DB->$func;
-    var_dump($data->sql);
+    $dbquery = $data->dbquery;
+    //print_r(eval("\$retval = ".$dbquery));
+    //eval("\$valueAry$myIndex = \$value;");
+    $retval = null;
+    eval("\$retval = $dbquery");
+    var_dump($retval);
     exit();
+
+
+
 }
