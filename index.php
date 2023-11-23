@@ -31,7 +31,7 @@ class local_dbdemo_form extends moodleform {
         global $DB,$USER;
         $mform = $this->_form;
 
-        $mform->addElement('textarea','sql','SQL Query','wrap="virtual" rows="10" cols="50"');
+        $mform->addElement('textarea', 'sql', 'SQL Query', 'wrap="virtual" rows="10" cols="50"');
         $mform->setType('demotext',PARAM_RAW);
         $this->add_action_buttons();
     }
@@ -40,11 +40,36 @@ $mform = new local_dbdemo_form();
 echo $OUTPUT->header();
 $mform->display();
 echo $OUTPUT->footer();
-if($data =$mform->get_data()){
+if ($data = $mform->get_data()) {
     global $DB;
-    $records = $DB->{"get_records"}('user');
 
-    $result= $DB->$func;
-    var_dump($data->sql);
+    $func = $data->sql;
+    preg_match('#\((.*?)\)#', $func, $match);
+    $parts = explode(",", $match[1]);
+    $table = trim($parts[0], "'");
+    $table = trim($parts[0], '"');
+    $params = trim($parts[1], '"');
+    $params = trim($parts[1], "'");
+    $params = trim($parts[1]);
+    $params = str_replace("[",'',$params);
+    $params = str_replace("]",'',$params);
+
+    $params = str_replace("=>", ":",$params);
+    $params = '{'.$params.'}';
+    $params = json_decode($params);
+
+
+   // $result = call_user_func([$DB, 'get_records'], $table );
+    // $result = call_user_func([$DB, 'get_records'], 'user', ['id' => 2]);
+    xdebug_break();
+    // $params = ['id' => 2];
+   // $result = call_user_func_array([$DB, 'get_records'], ['user', $params]);
+    $result = call_user_func_array([$DB, 'get_records'], [$table, $params]);
+
+
+
+
+  //$result =  call_user_func([$DB, 'get_dbfamily']);
+
     exit();
 }
